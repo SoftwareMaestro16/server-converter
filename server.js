@@ -20,22 +20,18 @@ const normalizeRates = (rates) => {
 
 app.get("/", async (req, res) => {
   try {
-    console.log("Запрос на / начат");
+    console.log("started");
 
     const [agroRates, prbRates, sberRates] = await Promise.all([
       getAgroRates(),
       getPrbRates(),
-      getSberRate(),
+      // getSberRate(),
     ]);
-
-    console.log("Курсы Агропромбанка (AgroRates):", agroRates);
-    console.log("Курсы Приднестровского банка (PrbRates):", prbRates);
-    console.log("Курсы Сбербанка (SberRates):", sberRates);
 
     const lastRates = {
       agro: normalizeRates(agroRates),
       prb: normalizeRates(prbRates),
-      sber: normalizeRates(sberRates),
+      // sber: normalizeRates(sberRates),
     };
 
     console.log("Все курсы:", lastRates);

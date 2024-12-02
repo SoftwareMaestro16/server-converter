@@ -1,41 +1,37 @@
-const { chromium } = require('playwright');
+const axios = require('axios');
+const cheerio = require('cheerio');
 
 const getAgroRates = async () => {
     try {
-        const browser = await chromium.launch();
-        const page = await browser.newPage();
-        await page.goto('https://www.agroprombank.com/', { waitUntil: 'domcontentloaded' });
+        // Загружаем страницу
+        const { data: html } = await axios.get('https://www.agroprombank.com/');
 
-        await page.waitForSelector('.exchange-rates-item', { timeout: 60000 });
+        // Парсим HTML с помощью Cheerio
+        const $ = cheerio.load(html);
 
-        const rates = await page.evaluate(() => {
-            const rows = document.querySelectorAll('.exchange-rates-item tr');
-            const currencies = [];
+        const rates = [];
 
-            rows.forEach(row => {
-                const ticker = row.querySelector('td[data-name1]')?.getAttribute('data-name1');
-                const dataName2 = row.querySelector('td[data-name2]')?.getAttribute('data-name2');
-                const buy = row.querySelector('td[data-buy]')?.getAttribute('data-buy');
-                const sell = row.querySelector('td[data-sell]')?.getAttribute('data-sell');
+        // Находим элементы с курсами
+        $('.exchange-rates-item tr').each((_, row) => {
+            const ticker = $(row).find('td[data-name1]').attr('data-name1');
+            const dataName2 = $(row).find('td[data-name2]').attr('data-name2');
+            const buy = $(row).find('td[data-buy]').attr('data-buy');
+            const sell = $(row).find('td[data-sell]').attr('data-sell');
 
-                if (
-                    ticker &&
-                    dataName2 === 'RUP' &&
-                    ['USD', 'EUR', 'RUB', 'MDL', 'UAH'].includes(ticker)
-                ) {
-                    currencies.push({
-                        ticker: ticker.slice(0, 3), // Берем только первые 3 символа
-                        buy: parseFloat(buy),
-                        sell: parseFloat(sell),
-                    });
-                }
-            });
-
-            return currencies.slice(0, 5); // Возвращаем только первые 5 записей
+            if (
+                ticker &&
+                dataName2 === 'RUP' &&
+                ['USD', 'EUR', 'RUB', 'MDL', 'UAH'].includes(ticker)
+            ) {
+                rates.push({
+                    ticker: ticker.slice(0, 3), // Берем только первые 3 символа
+                    buy: parseFloat(buy),
+                    sell: parseFloat(sell),
+                });
+            }
         });
 
-        await browser.close();
-        return rates;
+        return rates.slice(0, 5); // Возвращаем только первые 5 записей
     } catch (error) {
         console.error('Ошибка при получении данных Agro:', error);
         return [];
