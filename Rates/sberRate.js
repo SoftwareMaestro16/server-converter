@@ -1,10 +1,10 @@
-const puppeteer = require('puppeteer');
+const { chromium } = require('playwright');
 
 const getSberRate = async () => {
     try {
-        const browser = await puppeteer.launch({ headless: true });
+        const browser = await chromium.launch();
         const page = await browser.newPage();
-        await page.goto('https://prisbank.com/#exchange-rates', { waitUntil: 'networkidle0' });
+        await page.goto('https://prisbank.com/#exchange-rates', { waitUntil: 'domcontentloaded' });
 
         await page.waitForSelector('.Rates_ratesTable__LpRNL', { timeout: 60000 });
 

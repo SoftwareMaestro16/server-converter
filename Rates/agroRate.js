@@ -1,11 +1,11 @@
-const puppeteer = require('puppeteer');
+const { chromium } = require('playwright');
 
 const getAgroRates = async () => {
     try {
-        const browser = await puppeteer.launch({ headless: true });
+        const browser = await chromium.launch();
         const page = await browser.newPage();
+        await page.goto('https://www.agroprombank.com/', { waitUntil: 'domcontentloaded' });
 
-        await page.goto('https://www.agroprombank.com/', { waitUntil: 'networkidle0' });
         await page.waitForSelector('.exchange-rates-item', { timeout: 60000 });
 
         const rates = await page.evaluate(() => {

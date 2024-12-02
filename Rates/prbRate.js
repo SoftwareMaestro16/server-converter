@@ -1,15 +1,17 @@
-const puppeteer = require('puppeteer');
+const { chromium } = require('playwright');
 
 const getPrbRates = async () => {
-    const desiredTickers = ['USD', 'EUR', 'RUB', 'MDL', 'UAH', 
-        'GBP', 'PLN', 'CHF', 'BGN', 'RON', 
-        'AED', 'CNY', 'JPY', 'TRY', 'BYN'];
+    const desiredTickers = [
+        'USD', 'EUR', 'RUB', 'MDL', 'UAH',
+        'GBP', 'PLN', 'CHF', 'BGN', 'RON',
+        'AED', 'CNY', 'JPY', 'TRY', 'BYN'
+    ];
 
     try {
-        const browser = await puppeteer.launch({ headless: true });
+        const browser = await chromium.launch();
         const page = await browser.newPage();
+        await page.goto('https://www.cbpmr.net/kursval.php?lang=ru', { waitUntil: 'domcontentloaded' });
 
-        await page.goto('https://www.cbpmr.net/kursval.php?lang=ru', { waitUntil: 'networkidle0' });
         await page.waitForSelector('.simple-little-table', { timeout: 60000 });
 
         const rates = await page.evaluate((desiredTickers) => {
