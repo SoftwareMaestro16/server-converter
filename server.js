@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const port = 3000;
+const puppeteer = require("puppeteer");
 
 const { getSberRate } = require("./Rates/sberRate");
 const { getAgroRates } = require("./Rates/agroRate");
@@ -71,3 +72,5 @@ logAllRates();
 app.listen(port, () => {
     console.log(`Сервер запущен: http://localhost:${port}`);
 });
+
+console.log(puppeteer.executablePath());
