@@ -2,6 +2,7 @@
   "name": "echange-server",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "start": "nodemon server.js",
     "postinstall": "npx puppeteer install",
