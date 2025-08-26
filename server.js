@@ -8,7 +8,7 @@ const app = express();
 const port = 3000;
 
 app.use(cors({
-  origin: "https://jocular-kheer-9ba604.netlify.app"
+  origin: ["https://jocular-kheer-9ba604.netlify.app", "http://localhost:5173/"]
 }));
 
 const normalizeRates = (rates) => {
